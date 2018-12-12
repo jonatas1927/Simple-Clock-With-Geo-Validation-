@@ -32,7 +32,7 @@ class AlarmReceiver : BroadcastReceiver() {
                                     locationGlob.longitude,
                                     0.0,//para a altitude n fazer diferença agora
                                     0.0,
-                                    alarm.distancia + locationGlob!!.accuracy
+                                    alarm.distancia + locationGlob.accuracy // para que se a precisão do gps n estiver boa ele seja capaz de saber se o ponto pode ou não estar no raio desejado pelo usuario
                             )) {
                         if (context.isScreenOn()) {
                             context.showAlarmNotification(alarm)
