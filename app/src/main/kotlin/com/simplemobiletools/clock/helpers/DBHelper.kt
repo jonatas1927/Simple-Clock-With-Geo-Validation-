@@ -15,7 +15,7 @@ import com.simplemobiletools.commons.helpers.*
 import java.util.*
 
 class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
-    private val ALARMS_TABLE_NAME = "contacts"
+    private val ALARMS_TABLE_NAME = "alarms"
     private val COL_ID = "id"
     private val COL_TIME_IN_MINUTES = "time_in_minutes"
     private val COL_DAYS = "days"
@@ -63,6 +63,7 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
 
     fun insertAlarm(alarm: Alarm, db: SQLiteDatabase = mDb): Int {
         val values = fillAlarmContentValues(alarm)
+        println(values)
         return db.insert(ALARMS_TABLE_NAME, null, values).toInt()
     }
 

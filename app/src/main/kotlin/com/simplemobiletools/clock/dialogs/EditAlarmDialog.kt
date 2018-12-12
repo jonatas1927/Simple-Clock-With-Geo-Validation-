@@ -66,12 +66,13 @@ class EditAlarmDialog(val activity: SimpleActivity, val alarm: Alarm, val callba
 
             edit_alarm_label_image.applyColorFilter(textColor)
             edit_alarm_label.setText(alarm.label)
-            if (alarm.distancia > 0)
-                edit_alarm_distancia.setText(alarm.distancia.toString())
-            else
-                edit_alarm_distancia.setText("150")
-            edit_alarm_longitude.setText(alarm.longitude.toString())
-            edit_alarm_latitude.setText(alarm.latitude.toString())
+            edit_alarm_distancia.setText(alarm.distancia.toString())
+            if(alarm.latitude != 0.0 && alarm.longitude != 0.0){
+                edit_alarm_longitude.setText(alarm.longitude.toString())
+                edit_alarm_latitude.setText(alarm.latitude.toString())
+            }else{
+                updateLatLong(edit_alarm_latitude, edit_alarm_longitude)
+            }
             val dayLetters = activity.resources.getStringArray(R.array.week_day_letters).toList() as ArrayList<String>
             val dayIndexes = arrayListOf(0, 1, 2, 3, 4, 5, 6)
             if (activity.config.isSundayFirst) {
@@ -99,7 +100,6 @@ class EditAlarmDialog(val activity: SimpleActivity, val alarm: Alarm, val callba
                 }
 
                 edit_alarm_days_holder.addView(day)
-                updateLatLong(edit_alarm_latitude, edit_alarm_longitude)
             }
         }
 
@@ -115,6 +115,10 @@ class EditAlarmDialog(val activity: SimpleActivity, val alarm: Alarm, val callba
                             }
 
                             alarm.label = view.edit_alarm_label.value
+
+                            alarm.distancia = view.edit_alarm_distancia.value.toDouble()
+                            alarm.latitude = view.edit_alarm_latitude.value.toDouble()
+                            alarm.longitude = view.edit_alarm_longitude.value.toDouble()
 
                             var alarmId = alarm.id
                             if (alarm.id == 0) {
