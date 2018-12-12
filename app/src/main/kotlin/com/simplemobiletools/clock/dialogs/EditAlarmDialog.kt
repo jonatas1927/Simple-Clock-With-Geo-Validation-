@@ -1,13 +1,20 @@
 package com.simplemobiletools.clock.dialogs
 
+import android.annotation.SuppressLint
 import android.app.TimePickerDialog
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.media.AudioManager
+import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.widget.TextView
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.simplemobiletools.clock.R
+import com.simplemobiletools.clock.R.id.*
 import com.simplemobiletools.clock.activities.SimpleActivity
 import com.simplemobiletools.clock.extensions.*
 import com.simplemobiletools.clock.helpers.PICK_AUDIO_FILE_INTENT_ID
@@ -21,11 +28,13 @@ import kotlinx.android.synthetic.main.dialog_edit_alarm.view.*
 class EditAlarmDialog(val activity: SimpleActivity, val alarm: Alarm, val callback: (alarmId: Int) -> Unit) {
     private val view = activity.layoutInflater.inflate(R.layout.dialog_edit_alarm, null)
     private val textColor = activity.config.textColor
-    private var locationManager : LocationManager? = null
+
+    private val REQUEST_PERMISSIONS_REQUEST_CODE = 34
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     init {
         updateAlarmTime()
-
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.activity)
         view.apply {
             edit_alarm_time.setOnClickListener {
                 TimePickerDialog(context, context.getDialogTheme(), timeSetListener, alarm.timeInMinutes / 60, alarm.timeInMinutes % 60, context.config.use24HourFormat).show()
@@ -57,7 +66,10 @@ class EditAlarmDialog(val activity: SimpleActivity, val alarm: Alarm, val callba
 
             edit_alarm_label_image.applyColorFilter(textColor)
             edit_alarm_label.setText(alarm.label)
-            edit_alarm_distancia.setText(alarm.distancia.toString())
+            if (alarm.distancia > 0)
+                edit_alarm_distancia.setText(alarm.distancia.toString())
+            else
+                edit_alarm_distancia.setText("150")
             edit_alarm_longitude.setText(alarm.longitude.toString())
             edit_alarm_latitude.setText(alarm.latitude.toString())
             val dayLetters = activity.resources.getStringArray(R.array.week_day_letters).toList() as ArrayList<String>
@@ -87,6 +99,7 @@ class EditAlarmDialog(val activity: SimpleActivity, val alarm: Alarm, val callba
                 }
 
                 edit_alarm_days_holder.addView(day)
+                updateLatLong(edit_alarm_latitude, edit_alarm_longitude)
             }
         }
 
@@ -142,4 +155,15 @@ class EditAlarmDialog(val activity: SimpleActivity, val alarm: Alarm, val callba
         alarm.soundUri = alarmSound.uri
         view.edit_alarm_sound.text = alarmSound.title
     }
+
+    @SuppressLint("MissingPermission")
+    public fun updateLatLong(lat: TextView, long: TextView) {
+        fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location ->
+                    lat.setText(location.latitude.toString())
+                    long.setText((location.longitude.toString()))
+                }
+
+    }
 }
+

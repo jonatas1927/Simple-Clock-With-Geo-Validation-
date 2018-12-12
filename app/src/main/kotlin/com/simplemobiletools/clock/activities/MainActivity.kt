@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -28,6 +29,9 @@ class MainActivity : SimpleActivity() {
     private var storedPrimaryColor = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val permissions = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION)
+        ActivityCompat.requestPermissions(this, permissions,0)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         appLaunched(BuildConfig.APPLICATION_ID)
